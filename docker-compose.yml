@@ -1,0 +1,53 @@
+version: '3'
+services:
+  frontend:
+    build:
+      context: ./posts-microservices-frontend
+      dockerfile: Dockerfile
+    ports:
+      - 8000:8000
+    depends_on:
+      - backend-posts
+      - backend-comments
+
+  backend-posts:
+    build:
+      context: ./posts
+      dockerfile: Dockerfile
+    ports:
+      - 8001:8001
+    depends_on:
+      - database-posts
+
+  backend-comments:
+    build:
+      context: ./comments
+      dockerfile: Dockerfile
+    ports:
+      - 8002:8002
+    depends_on:
+      - database-comments
+
+  database-posts:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: your_root_password
+      MYSQL_DATABASE: posts
+      MYSQL_USER: root
+      MYSQL_PASSWORD: your_password
+    ports:
+      - 3307:3306
+    volumes:
+      - ./posts/db_data:/var/lib/mysql
+
+  database-comments:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: your_root_password
+      MYSQL_DATABASE: comments
+      MYSQL_USER: root
+      MYSQL_PASSWORD: your_password
+    ports:
+      - 3308:3306
+    volumes:
+      - ./comments/db_data:/var/lib/mysql
